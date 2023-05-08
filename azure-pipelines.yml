@@ -1,13 +1,13 @@
 variables:
   vmImageName: "ubuntu-latest" # Agent VM image name
 
-trigger:
-  - production
+# trigger:
+#   - production
 
 stages:
   - stage: Test
     displayName: Test stage
-    condition: or(eq(variables['Build.Reason'], 'IndividualCI')
+#     condition: or(eq(variables['Build.Reason'], 'IndividualCI')
     jobs:
       - job: Test
         displayName: Test job
@@ -20,7 +20,7 @@ stages:
 
   - stage: Build
     displayName: Build stage
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/production')
+#     condition: eq(variables['Build.SourceBranch'], 'refs/heads/production')
     jobs:
       - job: Build
         displayName: Build job
@@ -34,7 +34,7 @@ stages:
   - stage: Deploy
     displayName: Deploy to Dev
     dependsOn: Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'))
+#     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'))
     jobs:
       - job: Deploy
         displayName: Deploy to AKS
