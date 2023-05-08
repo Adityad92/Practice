@@ -46,4 +46,3 @@ stages:
           - script: |
               echo "Deploying ..."
             displayName: 'Deploy job script'
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'))
