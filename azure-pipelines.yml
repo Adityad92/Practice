@@ -1,14 +1,46 @@
+variables:
+  vmImageName: "ubuntu-latest" # Agent VM image name
+
 trigger:
-- master
+  - production
 
-strategy:
-  matrix:
-    linux:
-      operatingSystem: 'ubuntu-latest'
+stages:
+  - stage: Test
+    displayName: Test stage
+    condition: or(eq(variables['Build.Reason'], 'IndividualCI')
+    jobs:
+      - job: Test
+        displayName: Test job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              echo "Testing ..."
+            displayName: 'Test job script'
 
-pool:
-  vmImage: $(operatingSystem)
+  - stage: Build
+    displayName: Build stage
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/production')
+    jobs:
+      - job: Build
+        displayName: Build job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              echo "Building ..."
+            displayName: 'Build job script'
 
-steps:
-- script: echo Running on $(operatingSystem)
-  displayName: 'Run a one-line script'
+  - stage: Deploy
+    displayName: Deploy to Dev
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'))
+    jobs:
+      - job: Deploy
+        displayName: Deploy to AKS
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              echo "Deploying ..."
+            displayName: 'Deploy job script'
