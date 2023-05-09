@@ -6,7 +6,9 @@ variables:
 #   - pull_request
 
 stages:
-- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
+# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), and(eq(variables['Build.Reason'], 'Manual'), ne(variables['Build.SourceBranch'], 'refs/heads/production'))) }}:
   - stage: Test
     displayName: Test stage
 #     condition: eq(variables['Build.Reason'], 'IndividualCI')
