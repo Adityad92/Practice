@@ -19,7 +19,7 @@ stages:
               echo "Testing ..."
             displayName: 'Test job script'
             
-- ${{ if and(eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.SourceBranchName'], 'production')) }}:
+- ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'production')) }}:
   - stage: Build
     displayName: Build stage
 #     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
