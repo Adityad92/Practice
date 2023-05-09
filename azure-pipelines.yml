@@ -1,9 +1,9 @@
 variables:
   vmImageName: "ubuntu-latest" # Agent VM image name
 
-trigger:
-  - production
-  - pull_request
+# trigger:
+#   - production
+#   - pull_request
 
 stages:
 - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
