@@ -5,9 +5,10 @@ variables:
 #   - production
 
 stages:
+- ${{ if eq(variables['Build.Reason'], 'IndividualCI', 'PullRequest') }}:
   - stage: Test
     displayName: Test stage
-    condition: eq(variables['Build.Reason'], 'IndividualCI')
+#     condition: eq(variables['Build.Reason'], 'IndividualCI')
     jobs:
       - job: Test
         displayName: Test job
@@ -17,10 +18,11 @@ stages:
           - script: |
               echo "Testing ..."
             displayName: 'Test job script'
-
+            
+- ${{ if ne(variables['Build.Reason'], 'IndividualCI', 'PullRequest') }}:
   - stage: Build
     displayName: Build stage
-    condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
+#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
 #     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - job: Build
@@ -31,11 +33,12 @@ stages:
           - script: |
               echo "Building ..."
             displayName: 'Build job script'
-
+            
+- ${{ if ne(variables['Build.Reason'], 'IndividualCI', 'PullRequest') }}:
   - stage: Deploy
     displayName: Deploy to Dev
     dependsOn: Build
-    condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
+#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
 #     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - job: Deploy
