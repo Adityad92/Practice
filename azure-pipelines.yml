@@ -1,8 +1,9 @@
 variables:
   vmImageName: "ubuntu-latest" # Agent VM image name
 
-# trigger:
-#   - production
+trigger:
+  - production
+  - pull_request
 
 stages:
 - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
@@ -19,7 +20,7 @@ stages:
               echo "Testing ..."
             displayName: 'Test job script'
             
-- ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'production')) }}:
+- ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'refs/heads/production')) }}:
   - stage: Build
     displayName: Build stage
 #     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
