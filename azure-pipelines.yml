@@ -6,7 +6,9 @@ variables:
 #   - pull_request
 
 stages:
-- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
+# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), and(eq(variables['Build.Reason'], 'Manual'), ne(variables['Build.SourceBranch'], 'refs/heads/production'))) }}:
   - stage: Test
     displayName: Test stage
 #     condition: eq(variables['Build.Reason'], 'IndividualCI')
@@ -19,6 +21,19 @@ stages:
           - script: |
               echo "Testing ..."
             displayName: 'Test job script'
+            
+  - stage: semgrep
+    displayName: semgrep stage
+#     condition: eq(variables['Build.Reason'], 'IndividualCI')
+    jobs:
+      - job: semgrep
+        displayName: semgrep job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              echo "semgrep ..."
+            displayName: 'semgrep job script'
             
 # - ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'refs/heads/production')) }}:
 - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/production') }}:
