@@ -1,9 +1,9 @@
 variables:
   vmImageName: "ubuntu-latest"
-  DevkubernetesServiceEndpoint: “dev-cluster-sc"
-  ProdkubernetesServiceEndpoint: “prod-cluster-sc"
-  DevimagePullSecret: ‘dev-secret'
-  ProdimagePullSecret: ‘prod-secret'
+  DevkubernetesServiceEndpoint: "dev-cluster-sc"
+  ProdkubernetesServiceEndpoint: "prod-cluster-sc"
+  DevimagePullSecret: "dev-secret"
+  ProdimagePullSecret: "prod-secret"
 
 stages:
 
