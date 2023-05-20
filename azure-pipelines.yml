@@ -2,9 +2,24 @@ variables:
   vmImageName: "ubuntu-latest"
 
 stages:
+
+- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
+  - stage: Test
+    displayName: Test stage
+    jobs:
+      - job: Test
+        displayName: Test job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              echo "Testing ..."
+            displayName: 'Test job script'
+            
+- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/dev') }}:
   - stage: BuildDev
     displayName: Build Dev
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+#     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     jobs:
       - job: BuildJobDev
         displayName: Build Dev Job
@@ -31,9 +46,10 @@ stages:
           - script: echo "Deploying Dev"
             displayName: 'Deploy Dev job script'
 
+- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/prod') }}:
   - stage: BuildProd
     displayName: Build Prod
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
+#     condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
     jobs:
       - job: BuildJobProd
         displayName: Build Prod Job
