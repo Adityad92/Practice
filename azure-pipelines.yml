@@ -11,8 +11,8 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - checkout: self
-            persistCredentials: true
+#           - checkout: self
+#             persistCredentials: true
           - script: echo "Building Dev"
             displayName: 'Build Dev job script'
 
@@ -26,8 +26,8 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - checkout: self
-            persistCredentials: true
+#           - checkout: self
+#             persistCredentials: true
           - script: echo "Deploying Dev"
             displayName: 'Deploy Dev job script'
 
@@ -40,8 +40,8 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - checkout: self
-            persistCredentials: true
+#           - checkout: self
+#             persistCredentials: true
           - script: echo "Building Prod"
             displayName: 'Build Prod job script'
 
@@ -55,7 +55,7 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - checkout: self
-            persistCredentials: true
+#           - checkout: self
+#             persistCredentials: true
           - script: echo "Deploying Prod"
             displayName: 'Deploy Prod job script'
