@@ -34,7 +34,7 @@ stages:
   - stage: DeployDev
     displayName: Deploy to Dev
     dependsOn: BuildDev
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+#     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     jobs:
       - job: DeployJobDev
         displayName: Deploy to Dev
@@ -64,7 +64,7 @@ stages:
   - stage: DeployProd
     displayName: Deploy to Prod
     dependsOn: BuildProd
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
+#     condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
     jobs:
       - job: DeployJobProd
         displayName: Deploy to Prod
