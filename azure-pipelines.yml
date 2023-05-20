@@ -1,68 +1,61 @@
 variables:
-  vmImageName: "ubuntu-latest" # Agent VM image name
-
-# trigger:
-#   - production
-#   - pull_request
+  vmImageName: "ubuntu-latest"
 
 stages:
-# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
-# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), and(eq(variables['Build.Reason'], 'Manual'), ne(variables['Build.SourceBranch'], 'refs/heads/production'))) }}:
-  - stage: Test
-    displayName: Test stage
-#     condition: eq(variables['Build.Reason'], 'IndividualCI')
+  - stage: BuildDev
+    displayName: Build Dev
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     jobs:
-      - job: Test
-        displayName: Test job
+      - job: BuildJobDev
+        displayName: Build Dev Job
         pool:
           vmImage: $(vmImageName)
         steps:
-          - script: |
-              echo "Testing ..."
-            displayName: 'Test job script'
-            
-  - stage: semgrep
-    displayName: semgrep stage
-#     condition: eq(variables['Build.Reason'], 'IndividualCI')
-    jobs:
-      - job: semgrep
-        displayName: semgrep job
-        pool:
-          vmImage: $(vmImageName)
-        steps:
-          - script: |
-              echo "semgrep ..."
-            displayName: 'semgrep job script'
-            
-# - ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'refs/heads/production')) }}:
-- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/production') }}:
-  - stage: Build
-    displayName: Build stage
-#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
-#     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
-    jobs:
-      - job: Build
-        displayName: Build job
-        pool:
-          vmImage: $(vmImageName)
-        steps:
-          - script: |
-              echo "Building ..."
-            displayName: 'Build job script'
-            
+          - checkout: self
+            persistCredentials: true
+          - script: echo "Building Dev"
+            displayName: 'Build Dev job script'
 
-  - stage: Deploy
+  - stage: DeployDev
     displayName: Deploy to Dev
-    dependsOn: Build
-#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
-#     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
+    dependsOn: BuildDev
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
     jobs:
-      - job: Deploy
-        displayName: Deploy to AKS
+      - job: DeployJobDev
+        displayName: Deploy to Dev
         pool:
           vmImage: $(vmImageName)
         steps:
-          - script: |
-              echo "Deploying ..."
-            displayName: 'Deploy job script'
+          - checkout: self
+            persistCredentials: true
+          - script: echo "Deploying Dev"
+            displayName: 'Deploy Dev job script'
+
+  - stage: BuildProd
+    displayName: Build Prod
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
+    jobs:
+      - job: BuildJobProd
+        displayName: Build Prod Job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - checkout: self
+            persistCredentials: true
+          - script: echo "Building Prod"
+            displayName: 'Build Prod job script'
+
+  - stage: DeployProd
+    displayName: Deploy to Prod
+    dependsOn: BuildProd
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
+    jobs:
+      - job: DeployJobProd
+        displayName: Deploy to Prod
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - checkout: self
+            persistCredentials: true
+          - script: echo "Deploying Prod"
+            displayName: 'Deploy Prod job script'
