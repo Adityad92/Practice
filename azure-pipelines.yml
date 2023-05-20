@@ -1,5 +1,9 @@
 variables:
   vmImageName: "ubuntu-latest"
+  DevkubernetesServiceEndpoint: “dev-cluster-sc"
+  ProdkubernetesServiceEndpoint: “prod-cluster-sc"
+  DevimagePullSecret: ‘dev-secret'
+  ProdimagePullSecret: ‘prod-secret'
 
 stages:
 
@@ -28,7 +32,7 @@ stages:
         steps:
 #           - checkout: self
 #             persistCredentials: true
-          - script: echo "Building Dev"
+          - script: echo "Building Dev & sc is $(DevkubernetesServiceEndpoint)"
             displayName: 'Build Dev job script'
 
   - stage: DeployDev
@@ -43,7 +47,7 @@ stages:
         steps:
 #           - checkout: self
 #             persistCredentials: true
-          - script: echo "Deploying Dev"
+          - script: echo "Deploying Dev & secret is $(DevimagePullSecret)"
             displayName: 'Deploy Dev job script'
 
 - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/prod'), ne(variables['Build.Reason'], 'PullRequest')) }}:
@@ -58,7 +62,7 @@ stages:
         steps:
 #           - checkout: self
 #             persistCredentials: true
-          - script: echo "Building Prod"
+          - script: echo "Building Prod & sc is $(ProdkubernetesServiceEndpoint)"
             displayName: 'Build Prod job script'
 
   - stage: DeployProd
@@ -73,5 +77,5 @@ stages:
         steps:
 #           - checkout: self
 #             persistCredentials: true
-          - script: echo "Deploying Prod"
+          - script: echo "Deploying Prod & secret is $(ProdimagePullSecret)"
             displayName: 'Deploy Prod job script'
