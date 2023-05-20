@@ -16,7 +16,7 @@ stages:
               echo "Testing ..."
             displayName: 'Test job script'
             
-- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'IndividualCI')) }}:
+- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/dev'), ne(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: BuildDev
     displayName: Build Dev
 #     condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
@@ -46,7 +46,7 @@ stages:
           - script: echo "Deploying Dev"
             displayName: 'Deploy Dev job script'
 
-- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/prod'), ne(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.Reason'], 'IndividualCI')) }}:
+- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/prod'), ne(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: BuildProd
     displayName: Build Prod
 #     condition: eq(variables['Build.SourceBranch'], 'refs/heads/prod')
