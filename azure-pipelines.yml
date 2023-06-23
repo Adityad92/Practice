@@ -1,5 +1,5 @@
-variables:
-  vmImageName: "ubuntu-latest" # Agent VM image name
+# variables:
+#   vmImageName: "ubuntu-latest" # Agent VM image name
 
 # trigger:
 #   - production
@@ -17,8 +17,8 @@ stages:
     jobs:
       - job: Test
         displayName: Test job
-        pool:
-          vmImage: $(vmImageName)
+        # pool:
+        #   vmImage: $(vmImageName)
         steps:
           - script: |
               echo "Testing ..."
@@ -30,8 +30,8 @@ stages:
     jobs:
       - job: semgrep
         displayName: semgrep job
-        pool:
-          vmImage: $(vmImageName)
+        # pool:
+        #   vmImage: $(vmImageName)
         steps:
           - script: |
               echo "semgrep ..."
@@ -46,8 +46,8 @@ stages:
     jobs:
       - job: Build
         displayName: Build job
-        pool:
-          vmImage: $(vmImageName)
+        # pool:
+        #   vmImage: $(vmImageName)
         steps:
           - script: |
               echo "Building ..."
@@ -61,8 +61,8 @@ stages:
     jobs:
       - job: Deploy
         displayName: Deploy to AKS
-        pool:
-          vmImage: $(vmImageName)
+        # pool:
+        #   vmImage: $(vmImageName)
         steps:
           - script: |
               echo "Deploying ..."
