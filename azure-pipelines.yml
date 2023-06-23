@@ -51,7 +51,6 @@ stages:
               echo "Building ..."
             displayName: 'Build job script'
             
-
   - stage: Deploy
     displayName: Deploy to Dev
     dependsOn: Build
