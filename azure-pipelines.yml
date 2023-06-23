@@ -5,6 +5,8 @@ variables:
 #   - production
 #   - pull_request
 
+pool: AWS-agents
+
 stages:
 # - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
 - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
