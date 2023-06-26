@@ -101,9 +101,7 @@
 #             trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
 
 trigger:
-  - main
-  - develop
-  - integration
+  - production
   - feature-*
   - test-*
   
@@ -162,7 +160,7 @@ stages:
                 SEMGREP_RULES: p/default
               displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_Dev
       displayName: Build for Dev
       jobs:
