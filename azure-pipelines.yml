@@ -105,6 +105,7 @@ trigger:
   - develop
   - integration
   - feature-*
+  - test-*
   
 
 variables:
@@ -161,61 +162,61 @@ stages:
                 SEMGREP_RULES: p/default
               displayName: 'Semgrep security scan'
 
-  # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-  #   - stage: Build_Dev
-  #     displayName: Build for Dev
-  #     jobs:
-  #       - job: Build_Dev
-  #         displayName: Build for Dev
-  #         pool:
-  #           vmImage: $(vmImageName)
-  #         steps:
-  #           - task: Docker@2
-  #             displayName: Build an image
-  #             inputs:
-  #               repository: '$(imageName)'
-  #               command: 'build'
-  #               Dockerfile: '**/Dockerfile'
-  #               buildContext: '$(Build.SourcesDirectory)'
-  #               tags: '$(tag)'
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_Dev
+      displayName: Build for Dev
+      jobs:
+        - job: Build_Dev
+          displayName: Build for Dev
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: Docker@2
+              displayName: Build an image
+              inputs:
+                repository: '$(imageName)'
+                command: 'build'
+                Dockerfile: '**/Dockerfile'
+                buildContext: '$(Build.SourcesDirectory)'
+                tags: '$(tag)'
 
-  #   - stage: TrivyScan
-  #     displayName: 'Trivy Image Vulnerability Scan'
-  #     jobs:
-  #       - job: InstallTrivy
-  #         displayName: 'Install Trivy'
-  #         pool:
-  #           vmImage: $(vmImageName)
-  #         steps:
-  #           - script: |
-  #               sudo apt-get install rpm
-  #               wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
-  #               sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
-  #               trivy -v
-  #             displayName: 'Download and install Trivy'
+    - stage: TrivyScan
+      displayName: 'Trivy Image Vulnerability Scan'
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                sudo apt-get install rpm
+                wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+                sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+                trivy -v
+              displayName: 'Download and install Trivy'
 
-  #       - job: RunTrivyScan
-  #         displayName: 'Run Trivy Image Scan'
-  #         dependsOn: InstallTrivy
-  #         pool:
-  #           vmImage: $(vmImageName)
-  #         steps:
-  #           - task: CmdLine@2
-  #             displayName: 'Run Trivy scan'
-  #             inputs:
-  #               script: |
-  #                 trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
-  #                 trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
+        - job: RunTrivyScan
+          displayName: 'Run Trivy Image Scan'
+          dependsOn: InstallTrivy
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: CmdLine@2
+              displayName: 'Run Trivy scan'
+              inputs:
+                script: |
+                  trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
+                  trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
 
-  #   - stage: Deploy
-  #     displayName: Deploy to Dev
-  #     dependsOn: Build
-  #     jobs:
-  #       - job: Deploy
-  #         displayName: Deploy to AKS
-  #         pool:
-  #           vmImage: $(vmImageName)
-  #         steps:
-  #           - script: |
-  #               echo "Deploying ..."
-  #             displayName: 'Deploy job script'
+    - stage: Deploy
+      displayName: Deploy to Dev
+      dependsOn: Build
+      jobs:
+        - job: Deploy
+          displayName: Deploy to AKS
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "Deploying ..."
+              displayName: 'Deploy job script'
