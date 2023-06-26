@@ -27,13 +27,13 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          -  script: |
-                python -m pip install --upgrade pip
-                pip install semgrep
-                semgrep ci
-              env:
-                SEMGREP_RULES: p/default
-              displayName: 'Semgrep security scan'
+          - script: |
+              python -m pip install --upgrade pip
+              pip install semgrep
+              semgrep ci
+            env:
+              SEMGREP_RULES: p/default
+            displayName: 'Semgrep security scan'
             
 - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Build
