@@ -62,47 +62,160 @@
 
 
 
+# variables:
+#   trivyVersion: 0.42.1 #0.9.2
+#   tag: 'azuredevops-$(Build.BuildNumber)'
+#   imageName: 'adicop49/container-scanning-demo'
+
+# stages:
+# - stage: Build
+#   displayName: Build, Scan and Push image
+#   jobs:  
+#   - job: Build
+#     displayName: Build, Scan and Push
+#     pool:
+#       vmImage: 'ubuntu-latest'
+#     steps:
+#     - task: Docker@2
+#       displayName: Build an image
+#       inputs:
+#         # containerRegistry: 'Docker hub'
+#         repository: '$(imageName)'
+#         command: 'build'
+#         Dockerfile: '**/Dockerfile'
+#         buildContext: '$(Build.SourcesDirectory)'
+#         tags: '$(tag)'
+
+#     - script: |
+#         sudo apt-get install rpm
+#         wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+#         sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+#         trivy -v
+#       displayName: 'Download and install Trivy'
+
+#     - task: CmdLine@2
+#       displayName: "Run trivy scan"
+#       inputs:
+#         script: |
+#             trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
+#             trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
+
+trigger:
+  - main
+  - develop
+  - integration
+  - feature-*
+  
+
 variables:
+  imageRepository: 'cgl-dxfarm-hh-fa-strapi'
+  containerRegistryFullPathDev: 'dxfarm.azurecr.io'
+  containerRegistryFullPathTest: 'dxfarmhhtest.azurecr.io'
+  containerRegistryFullPath: "hhdxfarm.azurecr.io"
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+  vmImageName: 'ubuntu-latest'
+  k8sNamespace: 'dxfarm'
+  kubernetesServiceEndpointDev: 'aks-dev-service-connection'
+  kubernetesServiceEndpointTest: 'dxfarm-test-cluster-sc'
+  kubernetesServiceEndpoint: "hh-dxfarm-cluster-sc"
+  imagePullSecretDev: 'dxfarm-secret'
+  imagePullSecrettest: 'dxfarmtest-secret'
+  imagePullSecret: "hhdxfarm-secret"
+  dockerRegistryServiceConnectionDev: 'dxfarm-dev-registry-sc'
+  dockerRegistryServiceConnectionTest: 'dxfarm-test-registry-sc'
+  dockerRegistryServiceConnection: "hh-dxfarm-registry-sc"
+
+
   trivyVersion: 0.42.1 #0.9.2
   tag: 'azuredevops-$(Build.BuildNumber)'
   imageName: 'adicop49/container-scanning-demo'
 
 stages:
-- stage: Build
-  displayName: Build, Scan and Push image
-  jobs:  
-  - job: Build
-    displayName: Build, Scan and Push
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        # containerRegistry: 'Docker hub'
-        repository: '$(imageName)'
-        command: 'build'
-        Dockerfile: '**/Dockerfile'
-        buildContext: '$(Build.SourcesDirectory)'
-        tags: '$(tag)'
+  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Test
+      displayName: Test stage
+      jobs:
+        - job: Test
+          displayName: Node.js tests
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "Testing ..."
+              displayName: "Run Node.js tests"
 
-    - script: |
-        sudo apt-get install rpm
-        wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
-        sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
-        trivy -v
-      displayName: 'Download and install Trivy'
+    - stage: semgrep
+      displayName: Semgrep
+      jobs:
+        - job: semgrep
+          displayName: Semgrep Security Scan
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                python -m pip install --upgrade pip
+                pip install semgrep
+                semgrep ci
+              env:
+                SEMGREP_RULES: p/default
+              displayName: 'Semgrep security scan'
 
-    - task: CmdLine@2
-      displayName: "Run trivy scan"
-      inputs:
-        script: |
-            trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
-            trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
+  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+    - stage: Build_Dev
+      displayName: Build for Dev
+      jobs:
+        - job: Build_Dev
+          displayName: Build for Dev
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: Docker@2
+              displayName: Build an image
+              inputs:
+                repository: '$(imageName)'
+                command: 'build'
+                Dockerfile: '**/Dockerfile'
+                buildContext: '$(Build.SourcesDirectory)'
+                tags: '$(tag)'
 
-    # - task: Docker@2
-    #   inputs:
-    #     containerRegistry: 'Docker hub'
-    #     repository: '$(imageName)'
-    #     command: 'push'
-    #     tags: '$(tag)'
+    - stage: TrivyScan
+      displayName: 'Trivy Image Vulnerability Scan'
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                sudo apt-get install rpm
+                wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+                sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+                trivy -v
+              displayName: 'Download and install Trivy'
+
+        - job: RunTrivyScan
+          displayName: 'Run Trivy Image Scan'
+          dependsOn: InstallTrivy
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: CmdLine@2
+              displayName: 'Run Trivy scan'
+              inputs:
+                script: |
+                  trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
+                  trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
+
+    - stage: Deploy
+      displayName: Deploy to Dev
+      dependsOn: Build
+      jobs:
+        - job: Deploy
+          displayName: Deploy to AKS
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                echo "Deploying ..."
+              displayName: 'Deploy job script'
