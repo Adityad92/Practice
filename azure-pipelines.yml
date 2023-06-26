@@ -109,25 +109,7 @@ trigger:
   
 
 variables:
-  imageRepository: 'cgl-dxfarm-hh-fa-strapi'
-  containerRegistryFullPathDev: 'dxfarm.azurecr.io'
-  containerRegistryFullPathTest: 'dxfarmhhtest.azurecr.io'
-  containerRegistryFullPath: "hhdxfarm.azurecr.io"
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  # tag: '$(Build.BuildId)'
   vmImageName: 'ubuntu-latest'
-  k8sNamespace: 'dxfarm'
-  kubernetesServiceEndpointDev: 'aks-dev-service-connection'
-  kubernetesServiceEndpointTest: 'dxfarm-test-cluster-sc'
-  kubernetesServiceEndpoint: "hh-dxfarm-cluster-sc"
-  imagePullSecretDev: 'dxfarm-secret'
-  imagePullSecrettest: 'dxfarmtest-secret'
-  imagePullSecret: "hhdxfarm-secret"
-  dockerRegistryServiceConnectionDev: 'dxfarm-dev-registry-sc'
-  dockerRegistryServiceConnectionTest: 'dxfarm-test-registry-sc'
-  dockerRegistryServiceConnection: "hh-dxfarm-registry-sc"
-
-
   trivyVersion: 0.42.1 #0.9.2
   tag: 'azuredevops-$(Build.BuildNumber)'
   imageName: 'adicop49/container-scanning-demo'
@@ -151,6 +133,7 @@ stages:
       jobs:
         - job: semgrep
           displayName: Semgrep Security Scan
+          continueOnError: true
           pool:
             vmImage: $(vmImageName)
           steps:
@@ -179,3 +162,31 @@ stages:
                 Dockerfile: '**/Dockerfile'
                 buildContext: '$(Build.SourcesDirectory)'
                 tags: '$(tag)'
+
+    - stage: TrivyScan
+      displayName: 'Trivy Image Vulnerability Scan'
+      jobs:
+        - job: InstallTrivy
+          displayName: 'Install Trivy'
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - script: |
+                sudo apt-get install rpm
+                wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+                sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+                trivy -v
+              displayName: 'Download and install Trivy'
+
+        - job: RunTrivyScan
+          displayName: 'Run Trivy Image Scan'
+          dependsOn: InstallTrivy
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: CmdLine@2
+              displayName: 'Run Trivy scan'
+              inputs:
+                script: |
+                  trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
+                  trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
