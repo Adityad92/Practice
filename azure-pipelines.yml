@@ -6,12 +6,9 @@ variables:
 #   - pull_request
 
 stages:
-# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), ne(variables['Build.SourceBranch'], 'refs/heads/production')) }}:
-# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest'), and(eq(variables['Build.Reason'], 'Manual'), ne(variables['Build.SourceBranch'], 'refs/heads/production'))) }}:
+- ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Test
     displayName: Test stage
-#     condition: eq(variables['Build.Reason'], 'IndividualCI')
     jobs:
       - job: Test
         displayName: Test job
@@ -23,24 +20,24 @@ stages:
             displayName: 'Test job script'
             
   - stage: semgrep
-    displayName: semgrep stage
-#     condition: eq(variables['Build.Reason'], 'IndividualCI')
+    displayName: Semgrep Security Scan
     jobs:
       - job: semgrep
-        displayName: semgrep job
+        displayName: Run Semgrep Security Scan
         pool:
           vmImage: $(vmImageName)
         steps:
-          - script: |
-              echo "semgrep ..."
-            displayName: 'semgrep job script'
+          -  script: |
+                python -m pip install --upgrade pip
+                pip install semgrep
+                semgrep ci
+              env:
+                SEMGREP_RULES: p/default
+              displayName: 'Semgrep security scan'
             
-# - ${{ if and(eq(variables['Build.Reason'], 'ContinuousIntegration'), eq(variables['Build.SourceBranchName'], 'refs/heads/production')) }}:
-- ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/production') }}:
+- ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/develop'), ne(variables['Build.Reason'], 'PullRequest')) }}:
   - stage: Build
     displayName: Build stage
-#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
-#     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - job: Build
         displayName: Build job
@@ -51,12 +48,9 @@ stages:
               echo "Building ..."
             displayName: 'Build job script'
             
-
   - stage: Deploy
     displayName: Deploy to Dev
     dependsOn: Build
-#     condition: contains(variables['Build.SourceBranch'], 'production/') #use Build.SourceBranch
-#     and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest'))
     jobs:
       - job: Deploy
         displayName: Deploy to AKS
