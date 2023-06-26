@@ -113,7 +113,7 @@ variables:
   containerRegistryFullPathTest: 'dxfarmhhtest.azurecr.io'
   containerRegistryFullPath: "hhdxfarm.azurecr.io"
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
+  # tag: '$(Build.BuildId)'
   vmImageName: 'ubuntu-latest'
   k8sNamespace: 'dxfarm'
   kubernetesServiceEndpointDev: 'aks-dev-service-connection'
