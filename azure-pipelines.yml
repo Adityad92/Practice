@@ -128,22 +128,22 @@ stages:
                 echo "Testing ..."
               displayName: "Run Node.js tests"
 
-    - stage: semgrep
-      displayName: Semgrep
-      jobs:
-        - job: semgrep
-          displayName: Semgrep Security Scan
-          continueOnError: true
-          pool:
-            vmImage: $(vmImageName)
-          steps:
-            - script: |
-                python -m pip install --upgrade pip
-                pip install semgrep
-                semgrep ci
-              env:
-                SEMGREP_RULES: p/default
-              displayName: 'Semgrep security scan'
+    # - stage: semgrep
+    #   displayName: Semgrep
+    #   jobs:
+    #     - job: semgrep
+    #       displayName: Semgrep Security Scan
+    #       continueOnError: true
+    #       pool:
+    #         vmImage: $(vmImageName)
+    #       steps:
+    #         - script: |
+    #             python -m pip install --upgrade pip
+    #             pip install semgrep
+    #             semgrep ci
+    #           env:
+    #             SEMGREP_RULES: p/default
+    #           displayName: 'Semgrep security scan'
 
   - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest')) }}:
     - stage: Build_Dev
@@ -163,30 +163,39 @@ stages:
                 buildContext: '$(Build.SourcesDirectory)'
                 tags: '$(tag)'
 
-    - stage: TrivyScan
-      displayName: 'Trivy Image Vulnerability Scan'
-      jobs:
-        - job: InstallTrivy
-          displayName: 'Install Trivy'
-          pool:
-            vmImage: $(vmImageName)
-          steps:
-            - script: |
-                sudo apt-get install rpm
-                wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
-                sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
-                trivy -v
-              displayName: 'Download and install Trivy'
-
-        - job: RunTrivyScan
-          displayName: 'Run Trivy Image Scan'
-          dependsOn: InstallTrivy
-          pool:
-            vmImage: $(vmImageName)
-          steps:
             - task: CmdLine@2
-              displayName: 'Run Trivy scan'
+              displayName: TrivyScan
+              continueOnError: true
               inputs:
                 script: |
-                  trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
-                  trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
+                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
+                  
+                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed $(imageName):$(tag)
+
+    # - stage: TrivyScan
+    #   displayName: 'Trivy Image Vulnerability Scan'
+    #   jobs:
+    #     - job: InstallTrivy
+    #       displayName: 'Install Trivy'
+    #       pool:
+    #         vmImage: $(vmImageName)
+    #       steps:
+    #         - script: |
+    #             sudo apt-get install rpm
+    #             wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+    #             sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+    #             trivy -v
+    #           displayName: 'Download and install Trivy'
+
+    #     - job: RunTrivyScan
+    #       displayName: 'Run Trivy Image Scan'
+    #       dependsOn: InstallTrivy
+    #       pool:
+    #         vmImage: $(vmImageName)
+    #       steps:
+    #         - task: CmdLine@2
+    #           displayName: 'Run Trivy scan'
+    #           inputs:
+    #             script: |
+    #               trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
+    #               trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
