@@ -166,7 +166,7 @@ stages:
             - task: PublishPipelineArtifact@1
               displayName: Publish Docker image artifact
               inputs:
-                targetPath: '$(imageName)'
+                targetPath: '$(Build.SourcesDirectory)'
                 artifactName: 'docker-image'
 
 
