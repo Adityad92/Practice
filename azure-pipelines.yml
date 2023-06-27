@@ -168,9 +168,9 @@ stages:
               continueOnError: true
               inputs:
                 script: |
-                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy trivy image --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
+                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image $(imageName):$(tag)
                   
-                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy trivy image --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed $(imageName):$(tag)
+                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image $(imageName):$(tag)
 
     # - stage: TrivyScan
     #   displayName: 'Trivy Image Vulnerability Scan'
