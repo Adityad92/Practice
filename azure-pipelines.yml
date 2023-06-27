@@ -164,25 +164,25 @@ stages:
                 tags: '$(tag)'
 
             - task: PublishPipelineArtifact@1
+              displayName: Publish Docker image artifact
               inputs:
-                targetPath: "$(Pipeline.Workspace)/s/manifests"
-                artifact: "manifests"
-                publishLocation: "pipeline"
+                targetPath: '$(imageName)'
+                artifactName: 'docker-image'
 
 
     - stage: TrivyScan
       displayName: TrivyScan
       jobs:
         - job: DownloadArtifact
-          displayName: Download Artifact
+          displayName: Download Artifact & Scan image
           pool:
             vmImage: $(vmImageName)
           steps:
             - task: DownloadPipelineArtifact@2
+              displayName: Download Docker image artifact
               inputs:
-                buildType: "current"
-                artifactName: "manifests"
-                targetPath: "$(Pipeline.Workspace)/manifests"
+                artifactName: 'docker-image'
+                path: $(Build.ArtifactStagingDirectory)
 
             - task: CmdLine@2
               displayName: TrivyScan
