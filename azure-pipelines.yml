@@ -173,7 +173,7 @@ stages:
     - stage: TrivyScan
       displayName: TrivyScan
       jobs:
-        - job: Download Artifact
+        - job: DownloadArtifact
           displayName: Download Artifact
           pool:
             vmImage: $(vmImageName)
