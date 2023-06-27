@@ -163,6 +163,27 @@ stages:
                 buildContext: '$(Build.SourcesDirectory)'
                 tags: '$(tag)'
 
+            - task: PublishPipelineArtifact@1
+              inputs:
+                targetPath: "$(Pipeline.Workspace)/s/manifests"
+                artifact: "manifests"
+                publishLocation: "pipeline"
+
+
+    - stage: TrivyScan
+      displayName: TrivyScan
+      jobs:
+        - job: Download Artifact
+          displayName: Download Artifact
+          pool:
+            vmImage: $(vmImageName)
+          steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: "current"
+                artifactName: "manifests"
+                targetPath: "$(Pipeline.Workspace)/manifests"
+
             - task: CmdLine@2
               displayName: TrivyScan
               continueOnError: true
@@ -171,6 +192,16 @@ stages:
                   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
                   
                   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed $(imageName):$(tag)
+
+
+            # - task: CmdLine@2
+            #   displayName: TrivyScan
+            #   continueOnError: true
+            #   inputs:
+            #     script: |
+            #       docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
+                  
+            #       docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed $(imageName):$(tag)
 
     # - stage: TrivyScan
     #   displayName: 'Trivy Image Vulnerability Scan'
