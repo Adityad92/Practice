@@ -1,5 +1,5 @@
-pool:
-  vmImage: ubuntu-latest
+# pool:
+#   vmImage: ubuntu-latest
 
 # variables:
 #   tag: '$(Build.BuildId)'
@@ -19,7 +19,7 @@ stages:
       - job: semgrep
         displayName: Run Semgrep Security Scan
         pool:
-          vmImage: $(vmImageName)
+          vmImage: ubuntu-latest
         steps:
           - script: |
               python -m pip install --upgrade pip
