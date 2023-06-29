@@ -40,13 +40,13 @@ stages:
         script: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --scanners vuln --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed --format template --template "@template/junit.tpl" -o junit-report-high-crit.xml $(imageName):$(tag)
 
-    - task : PublishTestResult@2
+    - task : PublishTestResults@2
       inputs: 
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/junit-report-high-crit.xml'
-        mergeTestResults: true
-        failTaskOnFailedTests: false
-        testRunTitle: 'Trivy - Low and Medium Vulnerabilities'
+        # mergeTestResults: true
+        # failTaskOnFailedTests: false
+        # testRunTitle: 'Trivy - Low and Medium Vulnerabilities'
       condition: 'always()'
 
 
