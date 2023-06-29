@@ -46,7 +46,7 @@ stages:
       displayName: "Run trivy scan"
       inputs:
         script: |
-            trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@$(System.DefaultWorkingDirectory)/templates/Junit.tpl" -o junit-report.xml $(imageName):$(tag)
+            trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@$(System.DefaultWorkingDirectory)/contrib/Junit.tpl" -o junit-report.xml $(imageName):$(tag)
 
     - task: PublishTestResults@2
       inputs:
