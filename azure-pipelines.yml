@@ -1,17 +1,40 @@
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  tag: '$(Build.BuildId)'
-  imageName: 'adicop49/container-scanning-demo'
-  trivyVersion: 0.42.1
+# variables:
+#   tag: '$(Build.BuildId)'
+#   imageName: 'adicop49/container-scanning-demo'
+#   trivyVersion: 0.42.1
 
 stages:
-- stage: Build
-  jobs:
-  - job: Build
-    steps:
-    - checkout: self
+# - stage: Build
+#   jobs:
+#   - job: Build
+#     steps:
+#     - checkout: self
+
+  - stage: semgrep
+    displayName: Semgrep
+    jobs:
+      - job: semgrep
+        displayName: Run Semgrep Security Scan
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - script: |
+              python -m pip install --upgrade pip
+              pip install semgrep
+              semgrep ci --config auto -o semgrep-junit.xml --junit-xml
+            env:
+              SEMGREP_RULES: p/default
+            displayName: 'Semgrep security scan'
+
+          - task: PublishTestResults@2
+            displayName: Publish SemGrep Results
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "**/semgrep-junit.xml"
+            condition: succeededOrFailed() 
 
     # - task: CmdLine@2
     #   displayName: SemGrep SAST
@@ -26,33 +49,33 @@ stages:
     #     testResultsFiles: "**/semgrep-junit.xml"
     #   condition: succeededOrFailed() 
 
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        repository: '$(imageName)'
-        command: 'build'
-        Dockerfile: '**/Dockerfile'
-        buildContext: '$(Build.SourcesDirectory)'
-        tags: '$(tag)'
+    # - task: Docker@2
+    #   displayName: Build an image
+    #   inputs:
+    #     repository: '$(imageName)'
+    #     command: 'build'
+    #     Dockerfile: '**/Dockerfile'
+    #     buildContext: '$(Build.SourcesDirectory)'
+    #     tags: '$(tag)'
     
-    - script: |
-        sudo apt-get install rpm
-        wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
-        sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
-        trivy -v
-      displayName: 'Download and install Trivy'
+    # - script: |
+    #     sudo apt-get install rpm
+    #     wget https://github.com/aquasecurity/trivy/releases/download/v$(trivyVersion)/trivy_$(trivyVersion)_Linux-64bit.deb
+    #     sudo dpkg -i trivy_$(trivyVersion)_Linux-64bit.deb
+    #     trivy -v
+    #   displayName: 'Download and install Trivy'
 
-    - task: CmdLine@2
-      displayName: "Run trivy scan"
-      inputs:
-        script: |
-            trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@$(System.DefaultWorkingDirectory)/contrib/Junit.tpl" -o junit-report.xml $(imageName):$(tag)
+    # - task: CmdLine@2
+    #   displayName: "Run trivy scan"
+    #   inputs:
+    #     script: |
+    #         trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@$(System.DefaultWorkingDirectory)/contrib/Junit.tpl" -o junit-report.xml $(imageName):$(tag)
 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/junit-*.xml'
-        mergeTestResults: true
-        failTaskOnFailedTests: true
-        testRunTitle: 'Trivy - High and Critical Vulnerabilities'
-      condition: 'always()'
+    # - task: PublishTestResults@2
+    #   inputs:
+    #     testResultsFormat: 'JUnit'
+    #     testResultsFiles: '**/junit-*.xml'
+    #     mergeTestResults: true
+    #     failTaskOnFailedTests: true
+    #     testRunTitle: 'Trivy - High and Critical Vulnerabilities'
+    #   condition: 'always()'
