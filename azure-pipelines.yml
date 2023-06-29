@@ -46,22 +46,12 @@ stages:
       displayName: "Run trivy scan"
       inputs:
         script: |
-            trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@contrib/junit.tpl" -o junit-report-low-med.xml $(imageName):$(tag)
-            trivy image --scanners vuln --severity HIGH,CRITICAL --format template --template "@contrib/junit.tpl" -o junit-report-high-crit.xml $(imageName):$(tag)
+            trivy image --scanners vuln --severity LOW,MEDIUM --format template --template "@$(System.DefaultWorkingDirectory)/templates/Junit.tpl" -o junit-report.xml $(imageName):$(tag)
 
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: '**/junit-report-low-med.xml'
-        mergeTestResults: true
-        failTaskOnFailedTests: false
-        testRunTitle: 'Trivy - Low and Medium Vulnerabilities'
-      condition: 'always()'   
-
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/junit-report-high-crit.xml'
+        testResultsFiles: '**/junit-*.xml'
         mergeTestResults: true
         failTaskOnFailedTests: true
         testRunTitle: 'Trivy - High and Critical Vulnerabilities'
