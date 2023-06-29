@@ -38,14 +38,23 @@ stages:
       displayName: Trivy Vuln Scan
       inputs:
         script: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --scanners vuln --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --scanners vuln --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed --format template --template "@template/junit.tpl" -o junit-report-high-crit.xml $(imageName):$(tag)
+
+    - task : PublishTestResult@2
+      inputs: 
+      testResultsFormat: 'JUnit'
+      testResultsFiles: "**/junit-report-high-crit.xml"
+      mergeTestResults: true
+      failTaskOnFailedTests: false
+      testRunTitle: 'Trivy - Low and Medium Vulnerabilities'
+      condition: 'always()'
 
 
-    - task: PublishTestResults@2
-      displayName: Publish Trivy Test Results
-      inputs:
-        testResultsFormat: "JUnit"
-        testResultsFiles: "**/junit-report-*.xml"
-      condition: succeededOrFailed() 
+    # - task: PublishTestResults@2
+    #   displayName: Publish Trivy Test Results
+    #   inputs:
+    #     testResultsFormat: "JUnit"
+    #     testResultsFiles: "**/junit-report-*.xml"
+    #   condition: succeededOrFailed() 
 
           # docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy image --scanners vuln --exit-code 1 --severity HIGH,CRITICAL --format template --template "@contrib/junit.tpl" -o junit-report-high-crit.xml --ignore-unfixed $(imageName):$(tag)
