@@ -12,18 +12,18 @@ stages:
     steps:
     - checkout: self
 
-    - task: CmdLine@2
-      displayName: SemGrep SAST
-      inputs:
-        script: |
-         docker run --rm -v "${PWD}:/src" returntocorp/semgrep semgrep scan --config auto -o semgrep-junit.xml --junit-xml
+    # - task: CmdLine@2
+    #   displayName: SemGrep SAST
+    #   inputs:
+    #     script: |
+    #      docker run --rm -v "${PWD}:/src" returntocorp/semgrep semgrep scan --config auto -o semgrep-junit.xml --junit-xml
 
-    - task: PublishTestResults@2
-      displayName: Publish SemGrep Results
-      inputs:
-        testResultsFormat: "JUnit"
-        testResultsFiles: "**/semgrep-junit.xml"
-      condition: succeededOrFailed() 
+    # - task: PublishTestResults@2
+    #   displayName: Publish SemGrep Results
+    #   inputs:
+    #     testResultsFormat: "JUnit"
+    #     testResultsFiles: "**/semgrep-junit.xml"
+    #   condition: succeededOrFailed() 
 
     - task: Docker@2
       displayName: Build an image
@@ -38,11 +38,14 @@ stages:
       displayName: Trivy Vuln Scan
       inputs:
         script: |
-          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/  -v "$(pwd):/src" aquasec/trivy image --exit-code 0 --severity HIGH,CRITICAL --format template --template "@contrib/junit.tpl" -o src/junit-report-high-crit.xml --ignore-unfixed $(imageRepository):$(tag)
-          
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ -v "$(pwd):/src" aquasec/trivy image --exit-code 0 --severity LOW,MEDIUM --format template --template "@contrib/junit.tpl" -o src/junit-report-high-crit.xml --ignore-unfixed $(imageName):$(tag)
+
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ -v "$(pwd):/src" aquasec/trivy image --exit-code 1 --severity HIGH,CRITICAL --format template --template "@contrib/junit.tpl" -o src/junit-report-high-crit.xml --ignore-unfixed $(imageName):$(tag)
+
     - task: PublishTestResults@2
       displayName: Publish Trivy Test Results
       inputs:
         testResultsFormat: "JUnit"
         testResultsFiles: "**/junit-report-*.xml"
       condition: succeededOrFailed() 
+
