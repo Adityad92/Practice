@@ -1,16 +1,20 @@
 pool: AWS-agents
 
-# trigger:
-#   - production
-#   - pull_request
+# stages:
+#   - stage: Test
+#     displayName: Test stage
+#     jobs:
+#       - job: Test
+#         displayName: Test job
+#         steps:
+#           - script: |
+#               cat .npmrc
+#             displayName: 'Test job script'
 
-stages:
-  - stage: Test
-    displayName: Test stage
-    jobs:
-      - job: Test
-        displayName: Test job
-        steps:
-          - script: |
-              cat .npmrc
-            displayName: 'Test job script'
+steps:
+  - script: |
+      cat .npmrc
+    displayName: 'Test job script'
+  - script: |
+      cat - A .npmrc
+    displayName: 'Test job script 2'
