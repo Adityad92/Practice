@@ -16,5 +16,5 @@ steps:
       cat .npmrc
     displayName: 'Test job script'
   - script: |
-      cat - A .npmrc
-    displayName: 'Test job script 2'
+      cat -A .npmrc
+    displayName: 'Display .npmrc contents'
