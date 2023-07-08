@@ -1,20 +1,6 @@
 pool: AWS-agents
 
-# stages:
-#   - stage: Test
-#     displayName: Test stage
-#     jobs:
-#       - job: Test
-#         displayName: Test job
-#         steps:
-#           - script: |
-#               cat .npmrc
-#             displayName: 'Test job script'
-
 steps:
   - script: |
       cat .npmrc
     displayName: 'Test job script'
-  - script: |
-      cat -A .npmrc
-    displayName: 'Display .npmrc contents'
