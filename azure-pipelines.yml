@@ -1,5 +1,8 @@
 pool: AWS-agents
 
+variables:
+- group: my-variable-group
+
 steps:
   - script: |
       cat .npmrc
