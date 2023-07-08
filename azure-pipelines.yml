@@ -4,6 +4,7 @@ pool: AWS-agents
 #   - production
 #   - pull_request
 
+stages:
   - stage: Test
     displayName: Test stage
     jobs:
