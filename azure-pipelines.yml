@@ -10,3 +10,11 @@ steps:
       # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" token.conf
       # cat token.conf
     displayName: 'Test job script'
+
+  - script: |
+      python -m pip install --upgrade pip
+      pip install semgrep
+      semgrep ci
+    env:
+      SEMGREP_RULES: p/default
+    displayName: 'Semgrep security scan'
