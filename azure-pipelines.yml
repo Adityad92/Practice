@@ -6,5 +6,5 @@ variables:
 steps:
   - script: |
       cat .npmrc
-      echo "$(NPM_REGISTRY)"
+      cat token.conf
     displayName: 'Test job script'
