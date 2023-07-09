@@ -6,4 +6,5 @@ variables:
 steps:
   - script: |
       cat .npmrc
+      echo "$(NPM_REGISTRY)"
     displayName: 'Test job script'

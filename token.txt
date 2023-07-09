@@ -1,0 +1,5 @@
+${NPM_REGISTRY}
+###########
+$(NPM_REGISTRY)
+############
+$NPM_REGISTRY
