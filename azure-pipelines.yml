@@ -14,5 +14,5 @@ resources:
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
 
-jobs:
+stages:
 - template: my_template.yaml@templates
