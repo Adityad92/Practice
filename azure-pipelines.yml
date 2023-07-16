@@ -19,7 +19,7 @@ stages:
         - job: Test
           displayName: Node.js tests
           pool:
-            vmImage: "ubuntu-latest"
+            vmImage: $(vmImageName)
           steps:
             - script: |
                 echo "This is test stage"
