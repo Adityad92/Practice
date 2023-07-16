@@ -1,16 +1,25 @@
-trigger:
-  - develop
-  - integration
-  - main
-  - feature-*
-  - DEVOPS-*
+# trigger:
+#   - develop
+#   - integration
+#   - main
+#   - feature-*
+#   - DEVOPS-*
 
+trigger:
+  branches:
+    include:
+      - develop
+      - integration
+      - main
+      - feature-*
+      
 resources:
   repositories:
     - repository: templates
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
+      # ref: refs/tags/v1.0 
 
 variables:
 - group: dxfarm-variable-group
