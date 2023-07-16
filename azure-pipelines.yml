@@ -6,6 +6,7 @@ resources:
     - repository: templates
       type: github
       name: Adityad92/azure-pipeline-utility
+      endpoint: Adityad92
       # ref: refs/heads/main  # Specify the branch or tag of the template repository
 
 jobs:
