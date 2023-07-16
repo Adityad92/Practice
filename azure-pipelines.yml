@@ -1,11 +1,11 @@
 # Repo: YourRepo/YourProject
 # File: azure-pipelines.yml
-trigger:
-  - prod
-  - stage
-  - develop
-  - feature-*
-  - DEVOPS-*
+# trigger:
+#   - prod
+#   - stage
+#   - develop
+#   - feature-*
+#   - DEVOPS-*
   
 resources:
   repositories:
