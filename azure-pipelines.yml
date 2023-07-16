@@ -1,15 +1,18 @@
 # Repo: YourRepo/YourProject
 # File: azure-pipelines.yml
-
+trigger:
+  - prod
+  - stage
+  - develop
+  - feature-*
+  - DEVOPS-*
+  
 resources:
   repositories:
     - repository: templates
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
-      # ref: refs/heads/main  # Specify the branch or tag of the template repository
 
 jobs:
-- template: my_template.yaml@templates  # Template reference
-  parameters:
-    vmImage: 'ubuntu-latest'
+- template: my_template.yaml@templates
