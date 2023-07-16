@@ -19,7 +19,7 @@ resources:
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
-      # ref: refs/tags/v1.0
+      # ref: refs/tags/v1.0 
 
 variables:
 - group: dxfarm-variable-group
