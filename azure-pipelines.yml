@@ -16,8 +16,8 @@ resources:
 
 variables:
 - group: dxfarm-variable-group
-# - name: vmImageName
-#   value: 'AWS-agents'
+- name: vmImageName
+  value: 'ubuntu-latest'
 
 stages:
 - template: my_template.yaml@templates
