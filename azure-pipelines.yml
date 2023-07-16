@@ -10,3 +10,5 @@ resources:
 
 jobs:
 - template: my_template.yaml@templates  # Template reference
+  parameters:
+    vmImage: 'ubuntu-latest'
