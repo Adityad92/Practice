@@ -14,5 +14,10 @@ resources:
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
 
+variables:
+- group: dxfarm-variable-group
+- name: vmImageName
+  value: 'AWS-agents'
+
 stages:
 - template: my_template.yaml@templates
