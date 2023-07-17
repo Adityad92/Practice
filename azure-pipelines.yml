@@ -23,6 +23,7 @@ resources:
       endpoint: Adityad92
       ref: refs/tags/v1.2
 
+
 variables:
 - group: dxfarm-variable-group
 - name: vmImageName
