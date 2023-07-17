@@ -12,6 +12,8 @@ trigger:
       - integration
       - main
       - feature-*
+
+pool: AWS-agents
       
 resources:
   repositories:
@@ -19,7 +21,8 @@ resources:
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
-      # ref: refs/tags/v1.0    
+      ref: refs/tags/v1.2
+
 
 variables:
 - group: dxfarm-variable-group
