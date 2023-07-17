@@ -29,6 +29,6 @@ variables:
 
 stages:
 - template: my_template.yaml@templates
-  # parameters:
-  #   environmentName: ${{ variables['Build.SourceBranchName'] }}
+  parameters:
+    environmentName: ${{ variables['Build.SourceBranchName'] }}
   #   deployBranch: ${{ variables['Build.SourceBranchName'] }}
