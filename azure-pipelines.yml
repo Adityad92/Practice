@@ -25,11 +25,10 @@ variables:
 - group: dxfarm-variable-group
 - name: vmImageName
   value: 'ubuntu-latest'
-- name: environmentName
-  value: $[ variables['Build.SourceBranchName'] ]
-- name: deployBranch
-  value: $[ variables['Build.SourceBranchName'] ]
 
 
 stages:
 - template: my_template.yaml@templates
+  parameters:
+    environmentName: ${{ variables['Build.SourceBranchName'] }}
+    deployBranch: ${{ variables['Build.SourceBranchName'] }}
