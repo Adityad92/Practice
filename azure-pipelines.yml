@@ -42,3 +42,14 @@ stages:
   # parameters:
   #   environmentName: ${{ variables.environmentMappings[variables['Build.SourceBranchName']] }}
   #   deployBranch: ${{ variables['Build.SourceBranchName'] }}
+
+- ${{ if ne(variables['Build.Repository.Name'], 'Adityad92/Practice') }}:
+  - stage: Test
+    displayName: Test stage
+    jobs:
+      - job: Test
+        displayName: Node.js tests
+        steps:
+          - script: |
+              echo "This is $(TEST) stage"
+            displayName: Run Node.js tests
