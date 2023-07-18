@@ -21,17 +21,24 @@ resources:
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
-      ref: refs/tags/v1.2
+      # ref: refs/tags/v1.2
 
 
 variables:
 - group: dxfarm-variable-group
-- name: vmImageName
-  value: 'ubuntu-latest'
+- name: imageRepository
+  value: 'cgl-dxfarm-hh-mortality'
+# - name: environmentMappings
+#   value: >
+#     {
+#       'develop': 'Dev',
+#       'integration': 'Stage',
+#       'main': 'Prod',
+#     }
 
 
 stages:
 - template: my_template.yaml@templates
-  parameters:
-    environmentName: ${{ variables['Build.SourceBranchName'] }}
+  # parameters:
+  #   environmentName: ${{ variables.environmentMappings[variables['Build.SourceBranchName']] }}
   #   deployBranch: ${{ variables['Build.SourceBranchName'] }}
