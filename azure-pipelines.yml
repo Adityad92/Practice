@@ -13,7 +13,7 @@ trigger:
       - main
       - feature-*
 
-# pool: AWS-agents
+pool: AWS-agents
       
 resources:
   repositories:
