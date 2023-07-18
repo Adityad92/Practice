@@ -36,7 +36,6 @@ variables:
       'main': 'Prod',
     }
 
-
 stages:
 - template: my_template.yaml@templates
   parameters:
