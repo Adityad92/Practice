@@ -13,7 +13,7 @@ trigger:
       - main
       - feature-*
 
-pool: AWS-agents
+# pool: AWS-agents
       
 resources:
   repositories:
@@ -21,17 +21,17 @@ resources:
       type: github
       name: Adityad92/azure-pipeline-utility
       endpoint: Adityad92
-      ref: refs/tags/v1.2
+      # ref: refs/tags/v1.2
 
 
 variables:
 - group: dxfarm-variable-group
-- name: vmImageName
-  value: 'ubuntu-latest'
+- name: imageRepository
+  value: 'cgl-dxfarm-hh-mortality'
 
 
 stages:
 - template: my_template.yaml@templates
-  parameters:
-    environmentName: ${{ variables['Build.SourceBranchName'] }}
+  # parameters:
+  #   environmentName: ${{ variables['Build.SourceBranchName'] }}
   #   deployBranch: ${{ variables['Build.SourceBranchName'] }}
