@@ -28,13 +28,13 @@ variables:
 - group: dxfarm-variable-group
 - name: imageRepository
   value: 'cgl-dxfarm-hh-mortality'
-- name: environmentMappings
-  value: >
-    {
-      'develop': 'Dev',
-      'integration': 'Stage',
-      'main': 'Prod',
-    }
+# - name: environmentMappings
+#   value: >
+#     {
+#       'develop': 'Dev',
+#       'integration': 'Stage',
+#       'main': 'Prod',
+#     }
 
 
 stages:
