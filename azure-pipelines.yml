@@ -52,4 +52,5 @@ stages:
         steps:
           - script: |
               echo "This is $(TEST) stage"
+              echo "$(Build.Repository.Name)"
             displayName: Run Node.js tests
