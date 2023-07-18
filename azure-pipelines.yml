@@ -29,10 +29,12 @@ variables:
 - name: imageRepository
   value: 'cgl-dxfarm-hh-mortality'
 - name: environmentMappings
-  value:
-    'develop': 'Dev'
-    'integration': 'Stage'
-    'main': 'Prod'
+  value: >
+    {
+      'develop': 'Dev',
+      'integration': 'Stage',
+      'main': 'Prod',
+    }
 
 stages:
 - template: my_template.yaml@templates
