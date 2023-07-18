@@ -5,13 +5,13 @@
 #   - feature-*
 #   - DEVOPS-*
 
-# trigger:
-#   branches:
-#     include:
-#       - develop
-#       - integration
-#       - main
-#       - feature-*
+trigger:
+  branches:
+    include:
+      - develop
+      - integration
+      - main
+      - feature-*
 
 pool: AWS-agents
       
