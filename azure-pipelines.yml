@@ -1,15 +1,16 @@
-pool: AWS-agents
+# pool: AWS-agents
 
 variables:
 - group: my-variable-group
 
 steps:
   - script: |
-      # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" .npmrc
-      echo //npm.pkg.github.com/:_authToken=$(NPM_REGISTRY) >> .npmrc
-      cat .npmrc
-      # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" token.conf
-      # cat token.conf
+      # # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" .npmrc
+      # echo //npm.pkg.github.com/:_authToken=$(NPM_REGISTRY) >> .npmrc
+      # cat .npmrc
+      # # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" token.conf
+      # # cat token.conf
+      top -b -n 1 -o %MEM
     displayName: 'Test job script'
 
   # - script: |
