@@ -10,7 +10,11 @@ steps:
       # cat .npmrc
       # # sed -i "s/NPM_REGISTRY/$(NPM_REGISTRY)/g" token.conf
       # # cat token.conf
-      top -b -n 1 -o %MEM
+      # top -b -n 1 -o %MEM
+      export NODE_OPTIONS=--max-old-space-size=6144
+      env
+      ENV NODE_OPTIONS="--max-old-space-size=8192"
+      env
     displayName: 'Test job script'
 
   # - script: |
