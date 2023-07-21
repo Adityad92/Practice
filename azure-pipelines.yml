@@ -35,7 +35,7 @@ variables:
 #       'integration': 'Stage',
 #       'main': 'Prod',
 #     }
-
+ 
 
 stages:
 - template: my_template.yaml@templates
