@@ -41,7 +41,6 @@ stages:
             artifact: tf
             displayName: 'artifacts: upload tf'
 
-
   - template: deploy.yaml
     parameters:
       dependsOn: Build
