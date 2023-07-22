@@ -1,0 +1,38 @@
+parameters:
+- name: environmentName
+  type: string
+- name: deployBranch
+  type: string
+- name: terraformVersion
+  type: string
+- name: dependsOn
+  type: string
+
+stages:
+- stage: ${{ parameters.environmentName}}
+  dependsOn: ${{parameters.dependsOn}}
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/${{ parameters.deployBranch}}'))
+  jobs:
+    - deployment: ${{ parameters.environmentName}}
+      environment: 'practice - ${{parameters.environmentName}} - cloud'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - script: echo "Installing terraform"
+                displayName: Terraform - Install
+                
+              - script: echo "initializing terraform"
+                displayName: Terraform - Init
+                
+              - script: echo "validating terraform"
+                displayName: Terraform - Validate
+                
+              - script: echo "planning terraform"
+                displayName: Terraform - Plan
+
+              - script: |
+                  echo "applying terraform"
+                  echo '$(Pipeline.Workspace)/tf/env/${{parameters.environmentName}}'
+                  ls -la
+                displayName: Apply - Plan
