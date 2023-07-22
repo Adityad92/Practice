@@ -53,7 +53,7 @@ stages:
       dependsOn: test
       environmentName: dev
       deployBranch: master
-      terraformVersion: "devv1"
+      terraformVersion: "devV1"
   
   - template: deploy.yaml
     parameters:
