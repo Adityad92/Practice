@@ -41,21 +41,21 @@ stages:
             artifact: tf
             displayName: 'artifacts: upload tf'
 
-  - template: deploy.yml
+  - template: deploy.yaml
     parameters:
       dependsOn: Build
       environmentName: test
       deployBranch: master
       terraformVersion: "testv1"
   
-  - template: deploy.yml
+  - template: deploy.yaml
     parameters:
       dependsOn: test
       environmentName: dev
       deployBranch: master
       terraformVersion: "devv1"
   
-  - template: deploy.yml
+  - template: deploy.yaml
     parameters:
       dependsOn: dev
       environmentName: stage
