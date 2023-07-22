@@ -1,44 +1,32 @@
-# trigger:
-#   - develop
-#   - integration
-#   - main
-#   - feature-*
-#   - DEVOPS-*
 
 trigger:
   branches:
     include:
-      - develop
-      - integration
-      - main
-      - feature-*
-
+    - dev
+    - stage
+    - prod
+       
 pool: AWS-agents
-      
-resources:
-  repositories:
-    - repository: templates
-      type: github
-      name: Adityad92/azure-pipeline-utility
-      endpoint: Adityad92
-      # ref: refs/tags/v1.2
+#   vmImage: "ubuntu-latest"
 
-
-variables:
-- group: dxfarm-variable-group
-- name: imageRepository
-  value: 'cgl-dxfarm-hh-mortality'
-# - name: environmentMappings
-#   value: >
-#     {
-#       'develop': 'Dev',
-#       'integration': 'Stage',
-#       'main': 'Prod',
-#     }
-  
 
 stages:
-- template: my_template.yaml@templates
-  # parameters:
-  #   environmentName: ${{ variables.environmentMappings[variables['Build.SourceBranchName']] }}
-  #   deployBranch: ${{ variables['Build.SourceBranchName'] }}
+  - stage: Build
+    jobs:
+      - job: Build
+        steps:
+          - script: echo "Installing terraform"
+            displayName: Terraform - Install
+            
+          - script: echo "initializing terraform"
+            displayName: Terraform - Init
+            
+          - script: echo "validating terraform"
+            displayName: Terraform - Validate
+            
+          - script: echo "planning terraform"
+            displayName: Terraform - Plan
+
+          - script: echo "applying terraform"
+            displayName: Terraform - Apply
+
