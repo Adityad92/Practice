@@ -15,18 +15,18 @@ stages:
     jobs:
       - job: Build
         steps:
-          - script: echo "Installing terraform"
+          - script: echo "Installing terrafor by mergeing & testing m"
             displayName: Terraform - Install
             
-          - script: echo "initializing terraform"
+          - script: echo "initializing terraform by mergeing & testing "
             displayName: Terraform - Init
             
-          - script: echo "validating terraform"
+          - script: echo "validating terraform by mergeing & testing "
             displayName: Terraform - Validate
             
-          - script: echo "planning terraform"
+          - script: echo "planning terraform by mergeing & testing "
             displayName: Terraform - Plan
 
-          - script: echo "applying terraform"
+          - script: echo "applying terraform by mergeing & testing "
             displayName: Terraform - Apply
 
