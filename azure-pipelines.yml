@@ -2,9 +2,11 @@
 trigger:
   branches:
     include:
-    - dev
-    - stage
-    - prod
+    - master
+    - feature-*
+    # - dev
+    # - stage
+    # - prod
        
 pool: AWS-agents
 #   vmImage: "ubuntu-latest"
@@ -23,8 +25,39 @@ stages:
           - script: echo "validating terraform by mergeing & testing "
             displayName: Terraform - Validate
             
-          - script: echo "planning terraform by mergeing & testing "
+          - script: |
+              echo "planning terraform by merging & testing" >> terraformtest.txt
+              ls -la
+              cat terraformtest.txt
             displayName: Terraform - Plan
 
-          - script: echo "applying terraform by mergeing & testing "
-            displayName: Terraform - Apply
+          - task: CopyFiles@2
+            displayName: 'artifacts: copy tf files'
+            inputs:
+              Contents: '$(System.DefaultWorkingDirectory)/**/?(*.txt|*.plan|*.sh)'
+              TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      
+          - publish: $(Build.ArtifactStagingDirectory)/
+            artifact: tf
+            displayName: 'artifacts: upload tf'
+
+  - template: deploy.yaml
+    parameters:
+      dependsOn: Build
+      environmentName: test
+      deployBranch: master
+      terraformVersion: "testv1"
+  
+  - template: deploy.yaml
+    parameters:
+      dependsOn: test
+      environmentName: dev
+      deployBranch: master
+      terraformVersion: "devV1"
+  
+  - template: deploy.yaml
+    parameters:
+      dependsOn: dev
+      environmentName: stage
+      deployBranch: master
+      terraformVersion: "stagev1"
