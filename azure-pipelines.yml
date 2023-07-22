@@ -9,7 +9,6 @@ trigger:
 pool: AWS-agents
 #   vmImage: "ubuntu-latest"
 
-
 stages:
   - stage: Build
     jobs:
@@ -29,4 +28,3 @@ stages:
 
           - script: echo "applying terraform by mergeing & testing "
             displayName: Terraform - Apply
-
