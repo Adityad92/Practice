@@ -1,8 +1,13 @@
 variables:
   vmImageName: "ubuntu-latest"
 
+# trigger:
+#   - delete
+
 trigger:
-  - delete
+  branches:
+    include:
+    - delete
 
 stages:        
   - stage: test
