@@ -1,23 +1,22 @@
-# variables:
-#   vmImageName: "ubuntu-latest" # Agent VM image name
+variables:
+  vmImageName: "ubuntu-latest" # Agent VM image name
 
 # # trigger:
 # #   - production
 # #   - pull_request
 
-# - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-#   - stage: Test
-#     displayName: Test stage
-#     jobs:
-#       - job: Test
-#         displayName: Test job
-#         pool:
-#           vmImage: $(vmImageName)
-#         steps:
-#           - script: |
-#               echo "Testing ..."
-#             displayName: 'Test job script'
-            
+stages:
+  - stage: Test
+    displayName: Test stage
+    jobs:
+      - job: Test
+        displayName: Test job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+        - task: MicrosoftSecurityDevOps@1
+
+
 #   - stage: semgrep
 #     displayName: Semgrep
 #     jobs:
@@ -100,33 +99,33 @@
 #             trivy image --exit-code 0 --severity LOW,MEDIUM $(imageName):$(tag)
 #             trivy image --exit-code 1 --severity HIGH,CRITICAL $(imageName):$(tag)
 
-trigger:
-  branches:
-    include:
-      - production
-      - feature-*
-      - test-*
+# trigger:
+#   branches:
+#     include:
+#       - production
+#       - feature-*
+#       - test-*
   
 
-variables:
-  vmImageName: 'ubuntu-latest'
-  trivyVersion: 0.42.1 #0.9.2
-  tag: 'azuredevops-$(Build.BuildNumber)'
-  imageName: 'adicop49/container-scanning-demo'
+# variables:
+#   vmImageName: 'ubuntu-latest'
+#   trivyVersion: 0.42.1 #0.9.2
+#   tag: 'azuredevops-$(Build.BuildNumber)'
+#   imageName: 'adicop49/container-scanning-demo'
 
-stages:
-  - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
-    - stage: Test
-      displayName: Test stage
-      jobs:
-        - job: Test
-          displayName: Node.js tests
-          pool:
-            vmImage: $(vmImageName)
-          steps:
-            - script: |
-                echo "Testing ..."
-              displayName: "Run Node.js tests"
+# stages:
+#   - ${{ if or(eq(variables['Build.Reason'], 'IndividualCI'), eq(variables['Build.Reason'], 'PullRequest')) }}:
+#     - stage: Test
+#       displayName: Test stage
+#       jobs:
+#         - job: Test
+#           displayName: Node.js tests
+#           pool:
+#             vmImage: $(vmImageName)
+#           steps:
+#             - script: |
+#                 echo "Testing ..."
+#               displayName: "Run Node.js tests"
 
     # - stage: semgrep
     #   displayName: Semgrep
@@ -145,32 +144,32 @@ stages:
     #             SEMGREP_RULES: p/default
     #           displayName: 'Semgrep security scan'
 
-  - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest')) }}:
-    - stage: Build_Dev
-      displayName: Build for Dev
-      jobs:
-        - job: Build_Dev
-          displayName: Build for Dev
-          pool:
-            vmImage: $(vmImageName)
-          steps:
-            - task: Docker@2
-              displayName: Build an image
-              inputs:
-                repository: '$(imageName)'
-                command: 'build'
-                Dockerfile: '**/Dockerfile'
-                buildContext: '$(Build.SourcesDirectory)'
-                tags: '$(tag)'
+  # - ${{ if and(eq(variables['Build.SourceBranch'], 'refs/heads/production'), ne(variables['Build.Reason'], 'PullRequest')) }}:
+  #   - stage: Build_Dev
+  #     displayName: Build for Dev
+  #     jobs:
+  #       - job: Build_Dev
+  #         displayName: Build for Dev
+  #         pool:
+  #           vmImage: $(vmImageName)
+  #         steps:
+  #           - task: Docker@2
+  #             displayName: Build an image
+  #             inputs:
+  #               repository: '$(imageName)'
+  #               command: 'build'
+  #               Dockerfile: '**/Dockerfile'
+  #               buildContext: '$(Build.SourcesDirectory)'
+  #               tags: '$(tag)'
 
-            - task: CmdLine@2
-              displayName: TrivyScan
-              continueOnError: true
-              inputs:
-                script: |
-                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
+  #           - task: CmdLine@2
+  #             displayName: TrivyScan
+  #             continueOnError: true
+  #             inputs:
+  #               script: |
+  #                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 0 --severity MEDIUM,LOW --ignore-unfixed $(imageName):$(tag)
                   
-                  docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed $(imageName):$(tag)
+  #                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed $(imageName):$(tag)
 
     # - stage: TrivyScan
     #   displayName: 'Trivy Image Vulnerability Scan'
