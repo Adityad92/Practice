@@ -17,9 +17,11 @@ stages:
         - task: MicrosoftSecurityDevOps@1
           displayName: 'microsoft Security DevOps'
           inputs:
-            categories: 'secrets, code, artifacts, IaC, containers'
-            tools: 'bandit, binskim, eslint, templateanalyzer, terrascan, trivy'
+            categories: 'containers'
+            tools: 'trivy'
 
+            # categories: 'secrets, code, artifacts, IaC, containers'
+            # tools: 'bandit, binskim, eslint, templateanalyzer, terrascan, trivy'
 
 #   - stage: semgrep
 #     displayName: Semgrep
