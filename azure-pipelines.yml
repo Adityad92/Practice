@@ -15,6 +15,10 @@ stages:
           vmImage: $(vmImageName)
         steps:
         - task: MicrosoftSecurityDevOps@1
+          displayName: 'microsoft Security DevOps'
+          inputs:
+            categories: 'secrets, code, artifacts, IaC, containers'
+            tools: 'bandit, binskim, eslint, templateanalyzer, terrascan, trivy'
 
 
 #   - stage: semgrep
