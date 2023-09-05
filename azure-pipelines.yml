@@ -14,6 +14,10 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
+        - task: lambda3docker@0
+          inputs:
+            command: 'build'
+            imageBuild: 'test-defender-for-devops'
         - task: MicrosoftSecurityDevOps@1
           displayName: 'microsoft Security DevOps'
           inputs:
